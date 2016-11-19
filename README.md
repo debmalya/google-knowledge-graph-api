@@ -16,3 +16,6 @@ Accessing and using google knowledge graph api
     </dependency>
   </dependencies>
  ``` 
+ 
+### Execution
+ Please run ./kgsearch/run.sh
