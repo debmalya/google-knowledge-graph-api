@@ -64,7 +64,7 @@ public class App {
 				"https://kgsearch.googleapis.com/v1/entities:search");
 		System.out.println("Enter entity name :");
 		if (entities == null || entities.length == 0) {
-			entities = new String[]{in.nextLine()};
+			entities = new String[] { in.nextLine() };
 		}
 		for (String eachEntity : entities) {
 			url.put("query", eachEntity);
@@ -76,9 +76,13 @@ public class App {
 			JSONObject response = (JSONObject) parser.parse(httpResponse
 					.parseAsString());
 			JSONArray elements = (JSONArray) response.get("itemListElement");
-			for (Object element : elements) {
-				System.out.println(JsonPath.read(element, "$.result.name")
-						.toString());
+			if (elements != null && !elements.isEmpty()) {
+				for (Object element : elements) {
+					System.out.println(JsonPath.read(element, "$.result.name")
+							.toString());
+				}
+			} else {
+				System.err.println("'"+eachEntity+"' not found in the knowledge graph.");
 			}
 		}
 	}
