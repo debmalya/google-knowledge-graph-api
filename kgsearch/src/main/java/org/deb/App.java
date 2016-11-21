@@ -30,20 +30,14 @@ public class App {
 		try (Scanner in = new Scanner(System.in)) {
 			properties.load(new FileInputStream(
 					"./src/main/resource/kgsearch.properties"));
-			String apiKey = properties.getProperty("API_KEY");
-			if (apiKey == null || "".equals(apiKey)) {
-				System.err
-						.println("In '"
-								+ System.getProperty("user.dir")
-								+ "/src/main/resource/kgsearch.properties' insert your API_KEY");
-			} else {
-				HttpTransport httpTransport = new NetHttpTransport();
-				HttpRequestFactory requestFactory = httpTransport
-						.createRequestFactory();
-				JSONParser parser = new JSONParser();
 
-				entitySearch(in, requestFactory, parser);
-			}
+			HttpTransport httpTransport = new NetHttpTransport();
+			HttpRequestFactory requestFactory = httpTransport
+					.createRequestFactory();
+			JSONParser parser = new JSONParser();
+
+			entitySearch(in, requestFactory, parser, properties);
+
 		} catch (FileNotFoundException e) {
 			System.err.println("'" + System.getProperty("user.dir")
 					+ "/src/main/resource/kgsearch.properties' not found");
@@ -59,30 +53,58 @@ public class App {
 
 	public static void entitySearch(Scanner in,
 			HttpRequestFactory requestFactory, JSONParser parser,
-			String... entities) throws IOException, ParseException {
+			Properties properties, String... entities) throws IOException,
+			ParseException {
+		String apiKey = properties.getProperty("API_KEY");
+		if (apiKey == null || "".equals(apiKey)) {
+			System.err
+					.println("In '"
+							+ System.getProperty("user.dir")
+							+ "/src/main/resource/kgsearch.properties' insert your API_KEY");
+			return;
+		}
 		GenericUrl url = new GenericUrl(
 				"https://kgsearch.googleapis.com/v1/entities:search");
 		System.out.println("Enter entity name :");
 		if (entities == null || entities.length == 0) {
 			entities = new String[] { in.nextLine() };
 		}
+		System.out.println("Please wait, searching ...");
 		for (String eachEntity : entities) {
 			url.put("query", eachEntity);
 			url.put("limit", "10");
 			url.put("indent", "true");
-			url.put("key", properties.get("API_KEY"));
+			url.put("key", apiKey);
 			HttpRequest request = requestFactory.buildGetRequest(url);
 			HttpResponse httpResponse = request.execute();
 			JSONObject response = (JSONObject) parser.parse(httpResponse
 					.parseAsString());
 			JSONArray elements = (JSONArray) response.get("itemListElement");
+//			System.out.println(elements);
 			if (elements != null && !elements.isEmpty()) {
 				for (Object element : elements) {
-					System.out.println(JsonPath.read(element, "$.result.name")
-							.toString());
+
+					try {
+						System.out.println("Name :"
+								+ JsonPath.read(element, "$.result.name")
+										.toString()
+								+ " description : "
+								+ JsonPath
+										.read(element, "$.result.description")
+										.toString()
+//								+ " article body :"
+//								+ JsonPath
+//										.read(element, "$.result.articleBody")
+//										.toString()
+										);
+					} catch (Throwable ignore) {
+
+					}
+
 				}
 			} else {
-				System.err.println("'"+eachEntity+"' not found in the knowledge graph.");
+				System.err.println("'" + eachEntity
+						+ "' not found in the knowledge graph.");
 			}
 		}
 	}
