@@ -88,17 +88,13 @@ public class App {
 						System.out.println("Name :"
 								+ JsonPath.read(element, "$.result.name")
 										.toString()
-								+ " description : "
+								+ " article body :"
 								+ JsonPath
-										.read(element, "$.result.description")
+										.read(element, "$.result.detailedDescription.articleBody")
 										.toString()
-//								+ " article body :"
-//								+ JsonPath
-//										.read(element, "$.result.articleBody")
-//										.toString()
 										);
 					} catch (Throwable ignore) {
-
+						ignore.printStackTrace();
 					}
 
 				}
