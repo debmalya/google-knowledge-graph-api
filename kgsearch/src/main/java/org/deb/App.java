@@ -66,8 +66,9 @@ public class App {
 
 		} else {
 			GenericUrl url = new GenericUrl("https://kgsearch.googleapis.com/v1/entities:search");
-			System.out.println("Enter entity name :");
+			
 			if (entities == null || entities.length == 0) {
+				System.out.println("Enter entity name :");
 				entities = new String[] { in.nextLine() };
 			}
 			System.out.println("Please wait, searching ...");
@@ -89,7 +90,7 @@ public class App {
 							responseList.add(JsonPath.read(element, "$.result.name").toString() + " - "
 									+ JsonPath.read(element, "$.result.detailedDescription.articleBody").toString());
 						} catch (Throwable ignore) {
-							ignore.printStackTrace();
+//							ignore.printStackTrace();
 						}
 
 					}
