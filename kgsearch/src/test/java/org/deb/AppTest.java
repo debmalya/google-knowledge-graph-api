@@ -1,5 +1,19 @@
 package org.deb;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -10,6 +24,26 @@ import junit.framework.TestSuite;
 public class AppTest 
     extends TestCase
 {
+	
+	public static Properties properties = new Properties();
+	
+	HttpTransport httpTransport = new NetHttpTransport();
+	HttpRequestFactory requestFactory = httpTransport.createRequestFactory();
+	JSONParser parser = new JSONParser();
+	
+	
+	@BeforeClass
+	public static void init(){
+		try  {
+			properties.load(new FileInputStream("./src/main/resource/kgsearch.properties"));
+		} catch (FileNotFoundException e) {
+			System.err.println(
+					"ERR: '" + System.getProperty("user.dir") + "/src/main/resource/kgsearch.properties' not found");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
     /**
      * Create the test case
      *
@@ -33,6 +67,14 @@ public class AppTest
      */
     public void testApp()
     {
-        assertTrue( true );
+    	try {
+    		properties.load(new FileInputStream("./src/main/resource/kgsearch.properties"));
+			Response response = App.entitySearch(null, requestFactory, parser, properties,new String[]{"Amitabh Bacchan"});
+			Assert.assertNotNull(response);
+			Assert.assertTrue(response.getResultList().size() > 0);
+		} catch (IOException | ParseException e) {
+			e.printStackTrace();
+			Assert.assertFalse(e.getMessage(), true);
+		}
     }
 }
