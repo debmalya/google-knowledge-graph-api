@@ -39,7 +39,7 @@ public class App {
 			entitySearch(in, requestFactory, parser, properties);
 
 		} catch (FileNotFoundException e) {
-			System.err.println("'" + System.getProperty("user.dir")
+			System.err.println("ERR: '" + System.getProperty("user.dir")
 					+ "/src/main/resource/kgsearch.properties' not found");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -58,7 +58,7 @@ public class App {
 		String apiKey = properties.getProperty("API_KEY");
 		if (apiKey == null || "".equals(apiKey)) {
 			System.err
-					.println("In '"
+					.println("ERR: In '"
 							+ System.getProperty("user.dir")
 							+ "/src/main/resource/kgsearch.properties' insert your API_KEY");
 			return;
