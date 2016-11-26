@@ -86,9 +86,7 @@ public class App {
 					for (Object element : elements) {
 
 						try {
-
-							responseList.add(JsonPath.read(element, "$.result.name").toString() + " - "
-									+ JsonPath.read(element, "$.result.detailedDescription.articleBody").toString());
+							responseList.add(JsonPath.read(element, "$.result.detailedDescription.articleBody").toString());
 						} catch (Throwable ignore) {
 //							ignore.printStackTrace();
 						}
