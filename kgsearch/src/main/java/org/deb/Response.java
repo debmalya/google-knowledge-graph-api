@@ -24,6 +24,8 @@ import java.util.List;
 public class Response {
 	
 	private List<String> resultList;
+	private List<String> imageURLs;
+	private List<String> urls;
 
 	/**
 	 * 
@@ -40,9 +42,27 @@ public class Response {
 		this.resultList = resultList;
 	}
 
+	
+
+	public List<String> getImageURLs() {
+		return imageURLs;
+	}
+
+	public void setImageURLs(List<String> imageURLs) {
+		this.imageURLs = imageURLs;
+	}
+
+	public List<String> getUrls() {
+		return urls;
+	}
+
+	public void setUrls(List<String> urls) {
+		this.urls = urls;
+	}
+
 	@Override
 	public String toString() {
-		return " [resultList=" + resultList + "]";
+		return "Response [resultList=" + resultList + ", imageURLs=" + imageURLs + ", urls=" + urls + "]";
 	}
 
 	

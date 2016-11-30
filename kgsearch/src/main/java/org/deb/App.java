@@ -68,6 +68,8 @@ public class App {
 		String apiKey = properties.getProperty("API_KEY");
 		Response kgSearchResponse = new Response();
 		List<String> responseList = new ArrayList<>();
+		List<String> imageList = new ArrayList<>();
+		List<String> urlList = new ArrayList<>();
 		if (apiKey == null || "".equals(apiKey)) {
 			System.err.println("ERR: In '" + System.getProperty("user.dir")
 					+ "/src/main/resource/kgsearch.properties' insert your API_KEY");
@@ -93,17 +95,17 @@ public class App {
 				HttpResponse httpResponse = request.execute();
 				JSONObject response = (JSONObject) parser.parse(httpResponse.parseAsString());
 				JSONArray elements = (JSONArray) response.get("itemListElement");
-				// System.out.println(elements);
+				 
 				if (elements != null && !elements.isEmpty()) {
 					for (Object element : elements) {
 
 						try {
-
-
 							responseList
 									.add(JsonPath.read(element, "$.result.detailedDescription.articleBody").toString());
+							urlList.add(JsonPath.read(element, "$.result.detailedDescription.url").toString());
+//							imageList.add(JsonPath.read(element, "$.result.image.url").toString());
 						} catch (Throwable ignore) {
-						} 
+						}
 
 					}
 				} else {
@@ -113,6 +115,7 @@ public class App {
 		}
 
 		kgSearchResponse.setResultList(responseList);
+		kgSearchResponse.setUrls(urlList);
 		return kgSearchResponse;
 	}
 }
