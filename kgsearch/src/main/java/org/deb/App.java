@@ -29,14 +29,17 @@ public class App {
 	public static Properties properties = new Properties();
 
 	public static void main(String[] args) {
+		FileInputStream fis = null;
 		try (Scanner in = new Scanner(System.in)) {
-			properties.load(new FileInputStream("./src/main/resource/kgsearch.properties"));
+			fis = new FileInputStream("./src/main/resource/kgsearch.properties");
+			properties.load(fis);
 
 			HttpTransport httpTransport = new NetHttpTransport();
 			HttpRequestFactory requestFactory = httpTransport.createRequestFactory();
 			JSONParser parser = new JSONParser();
 
-			Response response = entitySearch(in, requestFactory, parser, properties);
+			App app = new App();
+			Response response = app.entitySearch(in, requestFactory, parser, properties);
 			System.out.println(response);
 
 		} catch (FileNotFoundException e) {
@@ -48,11 +51,19 @@ public class App {
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException ignore) {
+
+				}
+			}
 		}
 
 	}
 
-	public static Response entitySearch(Scanner in, HttpRequestFactory requestFactory, JSONParser parser,
+	public Response entitySearch(Scanner in, HttpRequestFactory requestFactory, JSONParser parser,
 			Properties properties, String... entities) throws IOException, ParseException {
 		String apiKey = properties.getProperty("API_KEY");
 		Response kgSearchResponse = new Response();
@@ -66,11 +77,13 @@ public class App {
 
 		} else {
 			GenericUrl url = new GenericUrl("https://kgsearch.googleapis.com/v1/entities:search");
-			System.out.println("Enter entity name :");
+
 			if (entities == null || entities.length == 0) {
+				System.out.println("Enter entity name :");
 				entities = new String[] { in.nextLine() };
+				System.out.println("Please wait, searching ...");
 			}
-			System.out.println("Please wait, searching ...");
+
 			for (String eachEntity : entities) {
 				url.put("query", eachEntity);
 				url.put("limit", "10");
@@ -86,10 +99,10 @@ public class App {
 
 						try {
 
-							responseList.add(JsonPath.read(element, "$.result.name").toString() + " - "
-									+ JsonPath.read(element, "$.result.detailedDescription.articleBody").toString());
+							responseList
+									.add(JsonPath.read(element, "$.result.detailedDescription.articleBody").toString());
 						} catch (Throwable ignore) {
-							ignore.printStackTrace();
+
 						}
 
 					}

@@ -67,14 +67,24 @@ public class AppTest
      */
     public void testApp()
     {
+    	FileInputStream fis = null;
     	try {
-    		properties.load(new FileInputStream("./src/main/resource/kgsearch.properties"));
-			Response response = App.entitySearch(null, requestFactory, parser, properties,new String[]{"Amitabh Bacchan"});
+    		fis = new FileInputStream("./src/main/resource/kgsearch.properties");
+    		properties.load(fis);
+			Response response = new App().entitySearch(null, requestFactory, parser, properties,new String[]{"Amitabh Bacchan"});
 			Assert.assertNotNull(response);
 			Assert.assertTrue(response.getResultList().size() > 0);
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 			Assert.assertFalse(e.getMessage(), true);
+		}finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException ignore) {
+					
+				}
+			}
 		}
     }
 }
