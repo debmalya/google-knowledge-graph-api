@@ -99,11 +99,11 @@ public class App {
 
 						try {
 
+
 							responseList
 									.add(JsonPath.read(element, "$.result.detailedDescription.articleBody").toString());
 						} catch (Throwable ignore) {
-
-						}
+						} 
 
 					}
 				} else {
