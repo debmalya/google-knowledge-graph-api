@@ -18,4 +18,5 @@ Accessing and using google knowledge graph api
  ``` 
  
 ### Execution
- Please run ./kgsearch/run.sh
+* Insert your API key in ./kgsearch/src/main/resource/kgsearch.properties
+* Please run ./kgsearch/run.sh
