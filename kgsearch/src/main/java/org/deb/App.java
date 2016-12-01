@@ -109,7 +109,12 @@ public class App {
 
 					}
 				} else {
+					String[] allEntities = eachEntity.split(" ");
+					if (allEntities.length > 0){
+						return entitySearch(in,requestFactory,parser,properties,allEntities);
+					} else {
 					responseList.add("'" + eachEntity + "' not found in the knowledge graph.");
+					}
 				}
 			}
 		}
