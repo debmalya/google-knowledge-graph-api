@@ -145,11 +145,16 @@ public class App {
 					for (Object element : elements) {
 
 						try {
-							responseList
-									.add(JsonPath.read(element, "$.result.detailedDescription.articleBody").toString());
-							urlList.add(JsonPath.read(element, "$.result.detailedDescription.url").toString());
-							// imageList.add(JsonPath.read(element,
-							// "$.result.image.url").toString());
+							String searchResult = JsonPath.read(element, "$.result.detailedDescription.articleBody")
+									.toString();
+							if (searchResult.contains(eachEntity)) {
+
+								responseList.add(searchResult);
+								urlList.add(JsonPath.read(element, "$.result.detailedDescription.url").toString());
+								// imageList.add(JsonPath.read(element,
+								// "$.result.image.url").toString());
+								
+							}
 						} catch (Throwable ignore) {
 						}
 
@@ -157,6 +162,7 @@ public class App {
 				} else {
 					String[] allEntities = eachEntity.split(" ");
 					if (allEntities.length > 0) {
+						System.out.println("Problem here " );
 						return entitySearch(in, requestFactory, parser, properties, limit, allEntities);
 					} else {
 						responseList.add("'" + eachEntity + "' not found in the knowledge graph.");
