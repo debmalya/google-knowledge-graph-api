@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
@@ -99,6 +100,33 @@ public class App {
 	 */
 	public Response entitySearch(Scanner in, HttpRequestFactory requestFactory, JSONParser parser,
 			Properties properties, int limit, String... entities) throws IOException, ParseException {
+		return entitySearch(in, requestFactory, parser, properties, limit, false, entities);
+	}
+
+	/**
+	 * 
+	 * @param in
+	 *            - InputStream to accept the parameters.
+	 * @param requestFactory
+	 *            - HttpRequestFactory to make the request.
+	 * @param parser
+	 *            - To parse JSON response.
+	 * @param properties
+	 *            - To get the API_KEY
+	 * @param limit
+	 *            - How many result will be listed (Range is 1 - 10)
+	 * @param whether
+	 *            we need to do a exact match or not?
+	 * @param entities
+	 *            - What entities will be searched.
+	 * @return Search response.
+	 * @throws IOException
+	 * @throws ParseException
+	 *             - If there is any error while parsing JSON response.
+	 */
+	public Response entitySearch(Scanner in, HttpRequestFactory requestFactory, JSONParser parser,
+			Properties properties, int limit, boolean isExactMatch, String... entities)
+			throws IOException, ParseException {
 		System.out.println("Default Search limit :" + limit);
 		int acceptedLimit = limit;
 		String apiKey = properties.getProperty("API_KEY");
@@ -145,32 +173,42 @@ public class App {
 					for (Object element : elements) {
 
 						try {
-							String searchResult = JsonPath.read(element, "$.result.detailedDescription.articleBody")
-									.toString();
-							if (searchResult.contains(eachEntity)) {
+							if (JsonPath.isPathDefinite("$.result.detailedDescription.articleBody")) {
+								String searchResult = JsonPath.read(element, "$.result.detailedDescription.articleBody")
+										.toString();
+								if (isExactMatch) {
+									if (searchResult.contains(eachEntity)) {
 
-								responseList.add(searchResult);
-								urlList.add(JsonPath.read(element, "$.result.detailedDescription.url").toString());
-								// imageList.add(JsonPath.read(element,
-								// "$.result.image.url").toString());
-								
+										responseList.add(searchResult);
+										urlList.add(
+												JsonPath.read(element, "$.result.detailedDescription.url").toString());
+										// imageList.add(JsonPath.read(element,
+										// "$.result.image.url").toString());
+
+									}
+								} else {
+									responseList.add(searchResult);
+									urlList.add(JsonPath.read(element, "$.result.detailedDescription.url").toString());
+								}
 							}
 						} catch (Throwable ignore) {
+							
 						}
 
 					}
 				} else {
 					String[] allEntities = eachEntity.split(" ");
 					if (allEntities.length > 0) {
-						System.out.println("Problem here " );
+						System.out.println("Problem here ");
 						return entitySearch(in, requestFactory, parser, properties, limit, allEntities);
-					} else {
-						responseList.add("'" + eachEntity + "' not found in the knowledge graph.");
 					}
 				}
 			}
 		}
 
+		if (responseList.isEmpty()) {
+			responseList.add("'" + Arrays.toString(entities) + "' not found in the knowledge graph.");
+		}
 		kgSearchResponse.setResultList(responseList);
 		kgSearchResponse.setUrls(urlList);
 		return kgSearchResponse;
