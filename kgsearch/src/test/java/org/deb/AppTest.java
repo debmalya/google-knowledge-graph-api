@@ -31,15 +31,7 @@ public class AppTest extends TestCase {
 
 	@BeforeClass
 	public static void init() {
-		try {
-			properties.load(new FileInputStream("./src/main/resource/kgsearch.properties"));
-		} catch (FileNotFoundException e) {
-			System.err.println(
-					"ERR: '" + System.getProperty("user.dir") + "/src/main/resource/kgsearch.properties' not found");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 	}
 
 	/**
@@ -68,7 +60,7 @@ public class AppTest extends TestCase {
 			fis = new FileInputStream("./src/main/resource/kgsearch.properties");
 			properties.load(fis);
 			Response response = new App().entitySearch(null, requestFactory, parser, properties, 10, true,
-					new String[] { "Amitabh Bacchan" });
+					null, new String[] { "Amitabh Bacchan" });
 			Assert.assertNotNull(response);
 			Assert.assertTrue(response.getResultList().size() > 0);
 			Assert.assertTrue(response.getResultList().size() < 11);
@@ -103,11 +95,40 @@ public class AppTest extends TestCase {
 		try {
 			fis = new FileInputStream("./src/main/resource/kgsearch.properties");
 			properties.load(fis);
-			Response response = new App().entitySearch(null, requestFactory, parser, properties, 10, false,
+			Response response = new App().entitySearch(null, requestFactory, parser, properties, 10, false, null,
 					new String[] { "Amitabh Bacchan" });
 			Assert.assertNotNull(response);
 			Assert.assertTrue(response.getResultList().size() == 10);
-			
+
+		} catch (IOException | ParseException e) {
+			e.printStackTrace();
+			Assert.assertFalse(e.getMessage(), true);
+		} finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException ignore) {
+
+				}
+			}
+		}
+	}
+
+	/**
+	 * Rigourous Test :-)
+	 */
+	public void testAppNonExistingEntity() {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream("./src/main/resource/kgsearch.properties");
+			properties.load(fis);
+			Response response = new App().entitySearch(null, requestFactory, parser, properties, 10, false,
+					null, new String[] { "Debmalya" });
+			Assert.assertNotNull(response);
+			Assert.assertTrue(response.getResultList().size() == 1);
+			Assert.assertTrue(response.getResultList().size() < 11);
+			Assert.assertEquals("'[Debmalya]' not found in the knowledge graph.", response.getResultList().get(0));
+
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 			Assert.assertFalse(e.getMessage(), true);
@@ -125,18 +146,17 @@ public class AppTest extends TestCase {
 	/**
 	 * Rigourous Test :-)
 	 */
-	public void testAppNonExistingEntity() {
+	public void testAppForPerson() {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("./src/main/resource/kgsearch.properties");
 			properties.load(fis);
 			Response response = new App().entitySearch(null, requestFactory, parser, properties, 10, false,
-					new String[] { "Debmalya" });
+					App.PERSON_SEARCH_URL, new String[] { "Aristotle" });
 			Assert.assertNotNull(response);
-			Assert.assertTrue(response.getResultList().size() == 1);
-			Assert.assertTrue(response.getResultList().size() < 11);
-			Assert.assertEquals("'[Debmalya]' not found in the knowledge graph.",response.getResultList().get(0));
+			Assert.assertTrue(response.getResultList().size() == 10);
 			
+
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 			Assert.assertFalse(e.getMessage(), true);

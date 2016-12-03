@@ -15,6 +15,7 @@
  */
 package org.deb;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,7 +27,7 @@ public class Response {
 	private List<String> resultList;
 	private List<String> imageURLs;
 	private List<String> urls;
-
+	private List<String[]> typeList;
 	/**
 	 * 
 	 */
@@ -60,9 +61,18 @@ public class Response {
 		this.urls = urls;
 	}
 
+	
+
+	/**
+	 * @param typeList
+	 */
+	public void setTypeList(List<String[]> typeList) {
+		this.typeList = typeList;
+	}
+
 	@Override
 	public String toString() {
-		return "Response [resultList=" + resultList + ", imageURLs=" + imageURLs + ", urls=" + urls + "]";
+		return "Response [resultList=" + resultList + ", urls= " + urls + " ]";
 	}
 
 	

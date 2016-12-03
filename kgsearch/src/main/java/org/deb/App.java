@@ -27,6 +27,11 @@ import com.jayway.jsonpath.JsonPath;
  *
  */
 public class App {
+	/**
+	 * 
+	 */
+	public static final String ENTITY_SEARCH_URL = "https://kgsearch.googleapis.com/v1/entities:search";
+	public static final String PERSON_SEARCH_URL = "https://kgsearch.googleapis.com/v1/person:search";
 	public static Properties properties = new Properties();
 
 	public static void main(String[] args) {
@@ -100,7 +105,7 @@ public class App {
 	 */
 	public Response entitySearch(Scanner in, HttpRequestFactory requestFactory, JSONParser parser,
 			Properties properties, int limit, String... entities) throws IOException, ParseException {
-		return entitySearch(in, requestFactory, parser, properties, limit, false, entities);
+		return entitySearch(in, requestFactory, parser, properties, limit, false, null, entities);
 	}
 
 	/**
@@ -117,6 +122,8 @@ public class App {
 	 *            - How many result will be listed (Range is 1 - 10)
 	 * @param whether
 	 *            we need to do a exact match or not?
+	 * @param searchURL
+	 *            - URL to be searched for it can be for entity,person,movie
 	 * @param entities
 	 *            - What entities will be searched.
 	 * @return Search response.
@@ -125,14 +132,14 @@ public class App {
 	 *             - If there is any error while parsing JSON response.
 	 */
 	public Response entitySearch(Scanner in, HttpRequestFactory requestFactory, JSONParser parser,
-			Properties properties, int limit, boolean isExactMatch, String... entities)
+			Properties properties, int limit, boolean isExactMatch, String searchURL, String... entities)
 			throws IOException, ParseException {
 		System.out.println("Default Search limit :" + limit);
 		int acceptedLimit = limit;
 		String apiKey = properties.getProperty("API_KEY");
 		Response kgSearchResponse = new Response();
 		List<String> responseList = new ArrayList<>();
-		List<String> imageList = new ArrayList<>();
+		List<String[]> typeList = new ArrayList<>();
 		List<String> urlList = new ArrayList<>();
 		if (apiKey == null || "".equals(apiKey)) {
 			System.err.println("ERR: In '" + System.getProperty("user.dir")
@@ -142,7 +149,8 @@ public class App {
 					+ "/src/main/resource/kgsearch.properties' insert your API_KEY");
 
 		} else {
-			GenericUrl url = new GenericUrl("https://kgsearch.googleapis.com/v1/entities:search");
+			GenericUrl url = new GenericUrl(ENTITY_SEARCH_URL);
+			
 
 			if (entities == null || entities.length == 0) {
 				System.out.println("Please enter entity name :");
@@ -166,14 +174,15 @@ public class App {
 				url.put("key", apiKey);
 				HttpRequest request = requestFactory.buildGetRequest(url);
 				HttpResponse httpResponse = request.execute();
+				
 				JSONObject response = (JSONObject) parser.parse(httpResponse.parseAsString());
 				JSONArray elements = (JSONArray) response.get("itemListElement");
 
 				if (elements != null && !elements.isEmpty()) {
 					for (Object element : elements) {
-
+						
 						try {
-							if (JsonPath.isPathDefinite("$.result.detailedDescription.articleBody")) {
+							
 								String searchResult = JsonPath.read(element, "$.result.detailedDescription.articleBody")
 										.toString();
 								if (isExactMatch) {
@@ -187,12 +196,14 @@ public class App {
 
 									}
 								} else {
+									JSONArray types = JsonPath.read(element, "$.result.@type");
+									typeList.add((String[])types.toArray(new String[0]));
 									responseList.add(searchResult);
 									urlList.add(JsonPath.read(element, "$.result.detailedDescription.url").toString());
 								}
-							}
-						} catch (Throwable ignore) {
 							
+						} catch (Throwable ignore) {
+//							ignore.printStackTrace();
 						}
 
 					}
@@ -211,6 +222,7 @@ public class App {
 		}
 		kgSearchResponse.setResultList(responseList);
 		kgSearchResponse.setUrls(urlList);
+		kgSearchResponse.setTypeList(typeList);
 		return kgSearchResponse;
 	}
 }
