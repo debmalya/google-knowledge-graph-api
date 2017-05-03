@@ -15,7 +15,6 @@
  */
 package org.deb;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,6 +27,7 @@ public class Response {
 	private List<String> imageURLs;
 	private List<String> urls;
 	private List<String[]> typeList;
+	
 	/**
 	 * 
 	 */
@@ -72,7 +72,7 @@ public class Response {
 
 	@Override
 	public String toString() {
-		return "Response [resultList=" + resultList + ", urls= " + urls + " ]";
+		return "" + resultList;
 	}
 
 	

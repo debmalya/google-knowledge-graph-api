@@ -61,7 +61,7 @@ public class App {
 			}
 			Response response = app.entitySearch(in, requestFactory, parser, properties, limit);
 			System.out.println(response);
-			System.out.println("Total number of elements :" + response.getResultList().size());
+//			System.out.println("Total number of elements :" + response.getResultList().size());
 
 		} catch (FileNotFoundException e) {
 			System.err.println(
@@ -155,15 +155,15 @@ public class App {
 			if (entities == null || entities.length == 0) {
 				System.out.println("Please enter entity name :");
 				entities = new String[] { in.nextLine() };
-				System.out.println("Please enter search limit (1 - 10):");
-				try {
-					acceptedLimit = Integer.parseInt(in.nextLine());
-					if (acceptedLimit < -1 || acceptedLimit > 10) {
-						acceptedLimit = limit;
-					}
-				} catch (NumberFormatException neverMind) {
-
-				}
+//				System.out.println("Please enter search limit (1 - 10):");
+//				try {
+//					acceptedLimit = Integer.parseInt(in.nextLine());
+//					if (acceptedLimit < -1 || acceptedLimit > 10) {
+//						acceptedLimit = limit;
+//					}
+//				} catch (NumberFormatException neverMind) {
+//
+//				}
 				System.out.println("Please wait, searching ...");
 			}
 
@@ -182,7 +182,6 @@ public class App {
 					for (Object element : elements) {
 						
 						try {
-							
 								String searchResult = JsonPath.read(element, "$.result.detailedDescription.articleBody")
 										.toString();
 								if (isExactMatch) {
