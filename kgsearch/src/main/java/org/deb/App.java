@@ -186,7 +186,7 @@ public class App {
 					for (Object element : elements) {
 						
 						try {
-							
+							System.out.println(element);
 								String searchResult = JsonPath.read(element, "$.result.detailedDescription.articleBody")
 										.toString();
 								if (isExactMatch) {
