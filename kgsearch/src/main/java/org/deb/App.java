@@ -138,9 +138,13 @@ public class App {
 		int acceptedLimit = limit;
 		String apiKey = properties.getProperty("API_KEY");
 		Response kgSearchResponse = new Response();
+		
 		List<String> responseList = new ArrayList<>();
 		List<String[]> typeList = new ArrayList<>();
 		List<String> urlList = new ArrayList<>();
+		
+		StringBuilder typeBuilder = new StringBuilder();
+		
 		if (apiKey == null || "".equals(apiKey)) {
 			System.err.println("ERR: In '" + System.getProperty("user.dir")
 					+ "/src/main/resource/kgsearch.properties' insert your API_KEY");
@@ -196,7 +200,12 @@ public class App {
 									}
 								} else {
 									JSONArray types = JsonPath.read(element, "$.result.@type");
-									typeList.add((String[])types.toArray(new String[0]));
+									
+									for (int i = 0; i < types.size(); i++){
+										typeBuilder.append( types.get(i).toString() );
+										typeBuilder.append(" , ");
+									}
+									
 									responseList.add(searchResult);
 									urlList.add(JsonPath.read(element, "$.result.detailedDescription.url").toString());
 								}
@@ -221,7 +230,7 @@ public class App {
 		}
 		kgSearchResponse.setResultList(responseList);
 		kgSearchResponse.setUrls(urlList);
-		kgSearchResponse.setTypeList(typeList);
+		kgSearchResponse.setType(typeBuilder.toString());
 		return kgSearchResponse;
 	}
 }
