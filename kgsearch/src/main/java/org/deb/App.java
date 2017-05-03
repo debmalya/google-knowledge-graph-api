@@ -45,7 +45,7 @@ public class App {
 			JSONParser parser = new JSONParser();
 
 			App app = new App();
-			int limit = 1;
+			int limit = 10;
 			try {
 				if (args.length == 2) {
 					limit = Integer.parseInt(args[1]);
@@ -159,15 +159,6 @@ public class App {
 			if (entities == null || entities.length == 0) {
 				System.out.println("Please enter entity name :");
 				entities = new String[] { in.nextLine() };
-				// System.out.println("Please enter search limit (1 - 10):");
-				// try {
-				// acceptedLimit = Integer.parseInt(in.nextLine());
-				// if (acceptedLimit < -1 || acceptedLimit > 10) {
-				// acceptedLimit = limit;
-				// }
-				// } catch (NumberFormatException neverMind) {
-				//
-				// }
 				System.out.println("Please wait, searching ...");
 			}
 
@@ -217,11 +208,7 @@ public class App {
 
 					}
 				} else {
-					String[] allEntities = eachEntity.split(" ");
-					if (allEntities.length > 0) {
-						System.out.println("Problem here ");
-						return entitySearch(in, requestFactory, parser, properties, limit, allEntities);
-					}
+					
 				}
 			}
 		}
