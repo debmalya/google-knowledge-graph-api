@@ -61,7 +61,8 @@ public class App {
 			}
 			Response response = app.entitySearch(in, requestFactory, parser, properties, limit);
 			System.out.println(response);
-			System.out.println("Total number of elements :" + response.getResultList().size());
+			// System.out.println("Total number of elements :" +
+			// response.getResultList().size());
 
 		} catch (FileNotFoundException e) {
 			System.err.println(
@@ -138,13 +139,13 @@ public class App {
 		int acceptedLimit = limit;
 		String apiKey = properties.getProperty("API_KEY");
 		Response kgSearchResponse = new Response();
-		
+
 		List<String> responseList = new ArrayList<>();
 		List<String[]> typeList = new ArrayList<>();
 		List<String> urlList = new ArrayList<>();
-		
+
 		StringBuilder typeBuilder = new StringBuilder();
-		
+
 		if (apiKey == null || "".equals(apiKey)) {
 			System.err.println("ERR: In '" + System.getProperty("user.dir")
 					+ "/src/main/resource/kgsearch.properties' insert your API_KEY");
@@ -154,20 +155,19 @@ public class App {
 
 		} else {
 			GenericUrl url = new GenericUrl(ENTITY_SEARCH_URL);
-			
 
 			if (entities == null || entities.length == 0) {
 				System.out.println("Please enter entity name :");
 				entities = new String[] { in.nextLine() };
-				System.out.println("Please enter search limit (1 - 10):");
-				try {
-					acceptedLimit = Integer.parseInt(in.nextLine());
-					if (acceptedLimit < -1 || acceptedLimit > 10) {
-						acceptedLimit = limit;
-					}
-				} catch (NumberFormatException neverMind) {
-
-				}
+				// System.out.println("Please enter search limit (1 - 10):");
+				// try {
+				// acceptedLimit = Integer.parseInt(in.nextLine());
+				// if (acceptedLimit < -1 || acceptedLimit > 10) {
+				// acceptedLimit = limit;
+				// }
+				// } catch (NumberFormatException neverMind) {
+				//
+				// }
 				System.out.println("Please wait, searching ...");
 			}
 
@@ -178,41 +178,41 @@ public class App {
 				url.put("key", apiKey);
 				HttpRequest request = requestFactory.buildGetRequest(url);
 				HttpResponse httpResponse = request.execute();
-				
+
 				JSONObject response = (JSONObject) parser.parse(httpResponse.parseAsString());
 				JSONArray elements = (JSONArray) response.get("itemListElement");
 
 				if (elements != null && !elements.isEmpty()) {
 					for (Object element : elements) {
-						
+
 						try {
+
 							System.out.println(element);
-								String searchResult = JsonPath.read(element, "$.result.detailedDescription.articleBody")
-										.toString();
-								if (isExactMatch) {
-									if (searchResult.contains(eachEntity)) {
+							String searchResult = JsonPath.read(element, "$.result.detailedDescription.articleBody")
+									.toString();
+							if (isExactMatch) {
+								if (searchResult.contains(eachEntity)) {
 
-										responseList.add(searchResult);
-										urlList.add(
-												JsonPath.read(element, "$.result.detailedDescription.url").toString());
-										// imageList.add(JsonPath.read(element,
-										// "$.result.image.url").toString());
-
-									}
-								} else {
-									JSONArray types = JsonPath.read(element, "$.result.@type");
-									
-									for (int i = 0; i < types.size(); i++){
-										typeBuilder.append( types.get(i).toString() );
-										typeBuilder.append(" , ");
-									}
-									
 									responseList.add(searchResult);
 									urlList.add(JsonPath.read(element, "$.result.detailedDescription.url").toString());
+									// imageList.add(JsonPath.read(element,
+									// "$.result.image.url").toString());
+
 								}
-							
+							} else {
+								JSONArray types = JsonPath.read(element, "$.result.@type");
+
+								for (int i = 0; i < types.size(); i++) {
+									typeBuilder.append(types.get(i).toString());
+									typeBuilder.append(" , ");
+								}
+
+								responseList.add(searchResult);
+								urlList.add(JsonPath.read(element, "$.result.detailedDescription.url").toString());
+							}
+
 						} catch (Throwable ignore) {
-//							ignore.printStackTrace();
+							// ignore.printStackTrace();
 						}
 
 					}
