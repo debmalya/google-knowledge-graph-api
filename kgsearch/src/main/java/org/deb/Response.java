@@ -26,9 +26,8 @@ public class Response {
 	private List<String> resultList;
 	private List<String> imageURLs;
 	private List<String> urls;
-	private List<String[]> typeList;
-
 	private String type;
+	private String details;
 	/**
 	 * @param type the type to set
 	 */
@@ -82,13 +81,28 @@ public class Response {
 	 * @param typeList
 	 */
 	public void setTypeList(List<String[]> typeList) {
-		this.typeList = typeList;
 	}
 
 	@Override
 	public String toString() {
-		return "" + resultList;
+		return "" + details;
 	}
+
+	/**
+	 * @return the details
+	 */
+	public String getDetails() {
+		return details;
+	}
+
+	/**
+	 * @param details the details to set
+	 */
+	public void setDetails(String details) {
+		this.details = details;
+	}
+	
+	
 
 	
 }

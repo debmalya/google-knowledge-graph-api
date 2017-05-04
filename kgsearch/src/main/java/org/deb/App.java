@@ -61,8 +61,7 @@ public class App {
 			}
 			Response response = app.entitySearch(in, requestFactory, parser, properties, limit);
 			System.out.println(response);
-			// System.out.println("Total number of elements :" +
-			// response.getResultList().size());
+			
 
 		} catch (FileNotFoundException e) {
 			System.err.println(
@@ -106,7 +105,7 @@ public class App {
 	 */
 	public Response entitySearch(Scanner in, HttpRequestFactory requestFactory, JSONParser parser,
 			Properties properties, int limit, String... entities) throws IOException, ParseException {
-		return entitySearch(in, requestFactory, parser, properties, limit, false, null, entities);
+		return entitySearch(in, requestFactory, parser, properties, limit, true, null, entities);
 	}
 
 	/**
@@ -139,6 +138,8 @@ public class App {
 		int acceptedLimit = limit;
 		String apiKey = properties.getProperty("API_KEY");
 		Response kgSearchResponse = new Response();
+		
+		StringBuilder aboutEntity = new StringBuilder();
 
 		List<String> responseList = new ArrayList<>();
 		List<String[]> typeList = new ArrayList<>();
@@ -178,7 +179,7 @@ public class App {
 
 						try {
 
-							System.out.println(element);
+							
 							String searchResult = JsonPath.read(element, "$.result.detailedDescription.articleBody")
 									.toString();
 							if (isExactMatch) {
@@ -186,8 +187,7 @@ public class App {
 
 									responseList.add(searchResult);
 									urlList.add(JsonPath.read(element, "$.result.detailedDescription.url").toString());
-									// imageList.add(JsonPath.read(element,
-									// "$.result.image.url").toString());
+									aboutEntity.append(searchResult);
 
 								}
 							} else {
@@ -219,6 +219,8 @@ public class App {
 		kgSearchResponse.setResultList(responseList);
 		kgSearchResponse.setUrls(urlList);
 		kgSearchResponse.setType(typeBuilder.toString());
+		kgSearchResponse.setDetails(aboutEntity.toString());
+		
 		return kgSearchResponse;
 	}
 }
