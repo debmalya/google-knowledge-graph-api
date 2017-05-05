@@ -45,14 +45,12 @@ public class App {
 			JSONParser parser = new JSONParser();
 
 			App app = new App();
-			int limit = 10;
+			int limit = 100;
 			try {
 				if (args.length == 2) {
 					limit = Integer.parseInt(args[1]);
-					if (limit > 10) {
+					if (limit < 0) {
 						limit = 10;
-					} else if (limit < 0) {
-						limit = 1;
 					}
 				}
 
@@ -61,7 +59,6 @@ public class App {
 			}
 			Response response = app.entitySearch(in, requestFactory, parser, properties, limit);
 			System.out.println(response);
-			
 
 		} catch (FileNotFoundException e) {
 			System.err.println(
@@ -134,11 +131,11 @@ public class App {
 	public Response entitySearch(Scanner in, HttpRequestFactory requestFactory, JSONParser parser,
 			Properties properties, int limit, boolean isExactMatch, String searchURL, String... entities)
 			throws IOException, ParseException {
-		System.out.println("Default Search limit :" + limit);
+
 		int acceptedLimit = limit;
 		String apiKey = properties.getProperty("API_KEY");
 		Response kgSearchResponse = new Response();
-		
+
 		StringBuilder aboutEntity = new StringBuilder();
 
 		List<String> responseList = new ArrayList<>();
@@ -179,17 +176,15 @@ public class App {
 
 						try {
 
-							
 							String searchResult = JsonPath.read(element, "$.result.detailedDescription.articleBody")
 									.toString();
+
 							if (isExactMatch) {
-								if (searchResult.contains(eachEntity)) {
 
-									responseList.add(searchResult);
-									urlList.add(JsonPath.read(element, "$.result.detailedDescription.url").toString());
-									aboutEntity.append(searchResult);
+								responseList.add(searchResult);
+								urlList.add(JsonPath.read(element, "$.result.detailedDescription.url").toString());
+								aboutEntity.append(searchResult);
 
-								}
 							} else {
 								JSONArray types = JsonPath.read(element, "$.result.@type");
 
@@ -203,12 +198,12 @@ public class App {
 							}
 
 						} catch (Throwable ignore) {
-							// ignore.printStackTrace();
+//							ignore.printStackTrace();
 						}
 
 					}
 				} else {
-					
+
 				}
 			}
 		}
@@ -220,7 +215,7 @@ public class App {
 		kgSearchResponse.setUrls(urlList);
 		kgSearchResponse.setType(typeBuilder.toString());
 		kgSearchResponse.setDetails(aboutEntity.toString());
-		
+
 		return kgSearchResponse;
 	}
 }
