@@ -7,13 +7,18 @@ query = raw_input( 'What to search :')
 service_url = 'https://kgsearch.googleapis.com/v1/entities:search'
 params = {
     'query': query,
-    'limit': 100,
-    'indent': True,
+    'limit': 10,
+    'indent': False,
     'key': api_key,
 }
 url = service_url + '?' + urllib.urlencode(params)
 response = json.loads(urllib.urlopen(url).read())
+found = False
+result = ""
 for element in response['itemListElement']:
-  if 'name' in element['result'] and 'description' in element['result']:
-#      print element['result']['name'] + ' (' + str(element['resultScore']) + ')'
-      print element['result']['name'] + ' ' + element['result']['description']
+  found = True
+  if 'name' in element['result'] and 'detailedDescription' in element['result'] and 'articleBody' in element['result']['detailedDescription']:
+      result += element['result']['detailedDescription']['articleBody'] + ' '
+if not found:
+    result =  query + ' not found'
+print result
